@@ -14,18 +14,24 @@ declare TS="$(date -I)"
 PODMAN_ARGS+=( -t "localhost/mirrors/centos-stream-${CENTOS_VERSION}:${TS}" )
 
 # Run rsync on the previous dataset if available, to speed up transfer and save on storage.
+declare -a REBUILD=false
 if podman image inspect "localhost/mirrors/centos-stream-${CENTOS_VERSION}:latest" &>/dev/null; then
   PODMAN_ARGS+=( --from "localhost/mirrors/centos-stream-${CENTOS_VERSION}:latest" )
   PODMAN_ARGS+=( --file Containerfile.sync )
 else
   PODMAN_ARGS+=( --file Containerfile.base )
+  REBUILD=true
 fi
 
 # Build the image.
 # Note: during the build, the repositories will be synced and the result will be stored in the image.
-echo podman build "${PODMAN_ARGS[@]}" .
 podman build "${PODMAN_ARGS[@]}" .
 podman tag "localhost/mirrors/centos-stream-${CENTOS_VERSION}:${TS}" "localhost/mirrors/centos-stream-${CENTOS_VERSION}:latest"
+
+# If the base image has been built, restart the build to synchronize the repositories with the latest data.
+if [[ "$REBUILD" == "true" ]]; then
+  exec "${BASH_SOURCE[0]}"
+fi
 
 # Here you can add the "podman push" command to send the mirror to your registry.
 # Do not forget to disable layer compression otherwise the push & pull operations
