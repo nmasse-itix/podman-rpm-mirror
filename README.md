@@ -1,4 +1,4 @@
-# Local mirror for CentOS Stream & EPEL
+# Local mirror for CentOS Stream & EPEL in a container image
 
 Creates local mirrors of the CentOS Stream & EPEL repositories and stores them as container images to keep an history and optimize storage consumption.
 
