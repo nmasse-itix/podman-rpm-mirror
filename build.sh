@@ -7,7 +7,7 @@ declare -a PODMAN_ARGS=()
 
 # Inject the desired CentOS Stream version as build arguments
 declare CENTOS_VERSION="10"
-PODMAN_ARGS+=( --arg CENTOS_VERSION="${CENTOS_VERSION}" --arg EPEL_VERSION="${CENTOS_VERSION}" )
+PODMAN_ARGS+=( --build-arg CENTOS_VERSION="${CENTOS_VERSION}" --build-arg EPEL_VERSION="${CENTOS_VERSION}" )
 
 # Tag the resulting image with the current date
 declare TS="$(date -I)"
